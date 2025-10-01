@@ -2,7 +2,7 @@
 
 Usage:
 ```
-$ python koji_rebuild.py NEVR
+$ fedora-repro-build NEVR
 ```
 
 This will establish a koji session,

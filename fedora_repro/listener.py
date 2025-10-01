@@ -9,23 +9,22 @@ import os
 import sys
 from pathlib import Path
 
-CONF_FILENAME = 'koji_rebuild_listener.toml'
+CONF_FILENAME = 'listener.toml'
 
 def find_conf_file():
     if (p := Path(sys.argv[0]).with_name(CONF_FILENAME)).exists():
         return p.as_posix()
-    elif (p := Path('/etc/fedora-repro-build') / CONF_FILENAME).exists():
+    elif (p := Path('/etc/fedora-repro') / CONF_FILENAME).exists():
         return p.as_posix()
     else:
-        return f'/usr/lib/fedora-repro-build/{CONF_FILENAME}'
+        return f'/usr/lib/fedora-repro/{CONF_FILENAME}'
 
 # can this happen later?
 os.environ['FEDORA_MESSAGING_CONF'] = find_conf_file()
 
 from fedora_messaging import api, config
 
-import koji_rebuild
-import koji_rebuild_worker
+from fedora_repro import builder, worker
 
 # Id: b1cb6938-bab8-4597-b278-dd45f5491ce8
 # Topic: org.fedoraproject.prod.buildsys.rpm.sign
@@ -123,10 +122,10 @@ def consumer(message):
     print('message:\n:', message)
 
     build = message.body['build']
-    build = koji_rebuild.RPM(name=build['name'],
-                             version=build['version'],
-                             release=build['release'],
-                             epoch=build['epoch'])
+    build = builder.RPM(name=build['name'],
+                        version=build['version'],
+                        release=build['release'],
+                        epoch=build['epoch'])
 
     if build.canonical in SEEN:
         return
@@ -138,7 +137,7 @@ def consumer(message):
         print(f'Build {build.canonical} does not match {OPTS.pattern}')
         return
 
-    if koji_rebuild_worker.rebuild_exists(build):
+    if worker.rebuild_exists(build):
         print(f'{build.canonical} already rebuilt, ignoring')
     else:
         print(f'{build.canonical} into the queue')
@@ -149,9 +148,6 @@ def main(argv):
 
     global OPTS, QUEUES
     OPTS = do_opts(argv)
-    QUEUES = koji_rebuild_worker.Queues.open(OPTS)
+    QUEUES = builder.Queues.open(OPTS)
 
     api.consume(consumer)
-
-if __name__ == '__main__':
-    main(sys.argv[1:])

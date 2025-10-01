@@ -6,12 +6,11 @@
 import argparse
 import dataclasses
 import random
-import sys
 
 import koji
 from ipcqueue import posixmq
 
-import koji_rebuild
+from fedora_repro import builder
 
 def do_opts(argv=None):
     parser = argparse.ArgumentParser()
@@ -63,7 +62,7 @@ def rebuild_exists(package):
 def main(argv):
     opts = do_opts(argv)
 
-    koji_rebuild.init_koji_session(opts)
+    builder.init_koji_session(opts)
 
     queues = Queues.open(opts)
 
@@ -89,22 +88,22 @@ def main(argv):
 
             print(f'Will rebuild {package}')
 
-            mock_result = koji_rebuild.rebuild_package(opts, package)
+            mock_result = builder.rebuild_package(opts, package)
             if mock_result == 0:
                 queues.results.put(f'SUCCESS {package}')
             else:
                 queues.results.put(f'FAILURE {package}: {mock_result=}')
 
     elif opts.after:
-        builds = koji_rebuild.SESSION.listBuilds(
+        builds = builder.SESSION.listBuilds(
             state=koji.BUILD_STATES['COMPLETE'],
             createdAfter=opts.after,
             pattern=opts.pattern)
 
         packages = [
-            koji_rebuild.RPM(name=build['name'],
-                             version=build['version'],
-                             release=build['release'])
+            builder.RPM(name=build['name'],
+                        version=build['version'],
+                        release=build['release'])
             for build in builds]
 
         todo = []
@@ -130,12 +129,8 @@ def main(argv):
             print(f'Got {ret}')
 
     else:
-        packages = [koji_rebuild.RPM.from_string(arg, is_package=True)
+        packages = [builder.RPM.from_string(arg, is_package=True)
                     for arg in opts.builds]
         for package in packages:
             print(f'{package.canonical} into the queue')
             queues.jobs.put(package)
-
-
-if __name__ == '__main__':
-    main(sys.argv[1:])
