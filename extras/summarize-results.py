@@ -2,13 +2,11 @@
 # SPDX-License-Identifier: LGPL-2.1-or-later
 
 import dataclasses
-import functools
 import json
 import re
 import sys
 import textwrap
 from pathlib import Path
-from pprint import pprint
 
 @dataclasses.dataclass
 class State:
@@ -186,7 +184,6 @@ def parse_rpmdiff(rpmname, diff):
 
             case word, path if set(word) < set('SM5DNLVUGFT.') and path.startswith('/'):
                 size_mod = 'S' in word[0]
-                hash_mod = '5' in word[2]
                 other_mod = set(word) > set('S5.')
 
                 if other_mod:
