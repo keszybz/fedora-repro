@@ -1,8 +1,15 @@
+This repo contains a set of programs to rebuild Fedora packages.
+The rebuild happens in an environment that contains the same packages as the original build,
+so the results are identical if the package builds reproducibly.
+
+See https://reproducible-builds.org/ for motivation and more details
+and https://docs.fedoraproject.org/en-US/reproducible-builds/ for the use in Fedora.
+
 🚧🚧🚧 WARNING: WIP 🚧🚧🚧
 
 Usage:
 ```
-$ fedora-repro-build NEVR
+$ fedora-repro-build.py NEVR
 ```
 
 This will establish a koji session,
