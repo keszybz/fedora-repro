@@ -148,6 +148,9 @@ def main(argv):
 
     global OPTS, QUEUES
     OPTS = do_opts(argv)
-    QUEUES = builder.Queues.open(OPTS)
+    QUEUES = worker.Queues.open(OPTS)
 
     api.consume(consumer)
+
+if __name__ == '__main__':
+    main(sys.argv[1:])

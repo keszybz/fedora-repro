@@ -4,9 +4,10 @@
 # https://kojipkgs.fedoraproject.org//packages/systemd/254/1.fc39/data/logs/x86_64/root.log
 # pylint: disable=missing-docstring,invalid-name,consider-using-with,unspecified-encoding
 
+import argparse
 import dataclasses
-import json
 import functools
+import json
 import os
 import platform
 import pprint
@@ -14,6 +15,7 @@ import re
 import shlex
 import shutil
 import subprocess
+import sys
 import tempfile
 import textwrap
 import time
@@ -933,3 +935,34 @@ def compare_package(opts, package):
     rpm_list = KojiBuildRPMs.get(build['build_id'])
     package = RPM.from_koji_rpm_listing(rpm_list)
     compare_outputs(package, save=True)
+
+def do_opts(argv=None):
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--koji-profile', default='koji')
+    parser.add_argument('--mock-uniqueext', default='repro',
+                        help="Mock build identifier, e.g. 'builder1' or '{p.canonical}'")
+    parser.add_argument('--debug',
+                        action='store_true')
+    parser.add_argument('--debug-xmlrpc',
+                        action='store_true')
+    parser.add_argument('-d', '--diff',
+                        action='store_true')
+
+    parser.add_argument('rpm')
+
+    opts = parser.parse_args(argv)
+    return opts
+
+def main(argv):
+    opts = do_opts(argv)
+    rpm = RPM.from_string(opts.rpm, is_package=True)
+
+    init_koji_session(opts)
+
+    if opts.diff:
+        return compare_package(opts, rpm)
+
+    sys.exit(rebuild_package(opts, rpm))
+
+if __name__ == '__main__':
+    main(sys.argv[1:])

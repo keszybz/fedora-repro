@@ -6,6 +6,7 @@
 import argparse
 import dataclasses
 import random
+import sys
 
 import koji
 from ipcqueue import posixmq
@@ -134,3 +135,6 @@ def main(argv):
         for package in packages:
             print(f'{package.canonical} into the queue')
             queues.jobs.put(package)
+
+if __name__ == '__main__':
+    main(sys.argv[1:])
