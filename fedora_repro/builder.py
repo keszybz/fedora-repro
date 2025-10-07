@@ -953,7 +953,10 @@ def do_opts(argv=None):
     opts = parser.parse_args(argv)
     return opts
 
-def main(argv):
+def main(argv=None):
+    if argv is None:
+        argv = sys.argv[1:]
+
     opts = do_opts(argv)
     rpm = RPM.from_string(opts.rpm, is_package=True)
 

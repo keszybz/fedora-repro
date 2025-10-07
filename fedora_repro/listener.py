@@ -143,7 +143,10 @@ def consumer(message):
         print(f'{build.canonical} into the queue')
         QUEUES.jobs.put(build)
 
-def main(argv):
+def main(argv=None):
+    if argv is None:
+        argv = sys.argv[1:]
+
     config.conf.setup_logging()
 
     global OPTS, QUEUES

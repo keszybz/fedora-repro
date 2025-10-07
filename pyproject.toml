@@ -1,0 +1,51 @@
+# SPDX-License-Identifier: LGPL-2.1-or-later
+
+[project]
+name = "fedora-repro"
+dynamic = ["version"]
+description = "Scripts to build Fedora packages in historical buildroots"
+readme = "README.md"
+license = { text = "LGPL-2.1-or-later" }
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: GNU Lesser General Public License v2 or later (LGPLv2+)",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: System :: Logging",
+    "Topic :: System :: Systems Administration",
+]
+keywords = ["reproducible builds", "fedora"]
+requires-python = ">=3.9"
+dependencies = ["ipcqueue"]
+
+[project.urls]
+Homepage = "https://github.com/keszybz/fedora-repro"
+Repository = "https://github.com/keszybz/fedora-repro"
+Issues = "https://pagure.io/fedora-reproducible-builds/project/issues"
+Documentation = "https://docs.fedoraproject.org/en-US/reproducible-builds/"
+
+[dependency-groups]
+test = ["pytest"]
+build = [
+    "twine>=4.0.0",
+]
+
+[build-system]
+requires = ["hatchling >= 1.26"]
+build-backend = "hatchling.build"
+
+[tool.hatch.version]
+path = "fedora_repro/__init__.py"
+
+[project.scripts]
+fedora-repro-build = "fedora_repro.builder:main"
+fedora-repro-listen = "fedora_repro.listener:main"
+fedora-repro-work = "fedora_repro.worker:main"

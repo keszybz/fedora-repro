@@ -60,7 +60,10 @@ def queue_pop(queue):
 def rebuild_exists(package):
     return (package.build_dir() / 'rebuild').exists()
 
-def main(argv):
+def main(argv=None):
+    if argv is None:
+        argv = sys.argv[1:]
+
     opts = do_opts(argv)
 
     builder.init_koji_session(opts)

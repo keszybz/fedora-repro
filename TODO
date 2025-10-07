@@ -1,0 +1,4 @@
+We only do rebuilds on one (two?) architectures.
+If a no-arch package was built on a different arch, we cannot repeat the build.
+Probably, the best approach is to warn and build it with the same rpm versions
+(if available for our arch) and hope for the best.
