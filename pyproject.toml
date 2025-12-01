@@ -24,7 +24,7 @@ classifiers = [
 ]
 keywords = ["reproducible builds", "fedora"]
 requires-python = ">=3.9"
-dependencies = ["ipcqueue"]
+dependencies = ["ipcqueue", "requests"]
 
 [project.urls]
 Homepage = "https://github.com/keszybz/fedora-repro"
